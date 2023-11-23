@@ -85,7 +85,7 @@
     }
     .home-logo {
         font-size: 5vh;
-        font-family: Verdana;
+        font-family: Verdana,serif;
         font-weight: bold;
         text-transform: capitalize;
     }
@@ -106,8 +106,8 @@
         display: none;
     }
     .home-mobile-menu {
-        top: 0px;
-        left: 0px;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100vh;
         display: none;
@@ -195,7 +195,7 @@
         color: var(--dl-color-gray-white);
         font-size: 2em;
         font-style: italic;
-        font-family: Verdana;
+        font-family: Verdana, serif;
         font-weight: bold;
     }
     .home-container3 {
