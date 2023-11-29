@@ -2,6 +2,7 @@
     import {time} from "../store.js";
 
     import Graph from "./Graph.svelte";
+    import Map from "./Map.svelte";
 
     const formatter = new Intl.DateTimeFormat('en', {
         hour12: true,
@@ -41,6 +42,7 @@
         <div class="grid-databox">
             <h1>The time is {formatter.format($time)}</h1>
             <h3>Map</h3>
+            <Map />
         </div>
         <div class="grid-databox">
             <h3>Data1</h3>
