@@ -1,39 +1,62 @@
 <script>
+    import {time} from "../store.js";
+
+    import Graph from "./Graph.svelte";
+
+    const formatter = new Intl.DateTimeFormat('en', {
+        hour12: true,
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit'
+    });
 
     let clickHandle = () => {
 
-        alert("Button!")
+        alert("Button!");
     }
+
 </script>
 
 
 <div class="home-header">
-    <header class="home-navbar-interactive">
+    <header class="home-navbar">
         <span class="home-logo">Water Sensor</span>
-        <div class="home-desktop-menu">
-            <div class="home-buttons"></div>
-        </div>
-        <div class="home-burger-menu"></div>
-        <div class="home-mobile-menu"></div>
+            <div class="home-buttons">
+                <nav class="home-interaction">
+                    <button type="button" class="home-button button" on:click={clickHandle}>Save Data</button>
+                    <button type="button" class="home-button1 button">Import Data</button>
+                    <button type="button" class="home-button2 button">Export Data</button>
+                    <button type="button" class="home-button3 button">Delete Data</button>
+                </nav>
+            </div>
+
     </header>
 </div>
 
 <div class="home-footer"></div>
 <div class="home-features">
     <h1 class="home-text">Data:</h1>
-    <nav class="home-interaction">
-        <button type="button" class="home-button button" on:click={clickHandle}>Save Data</button>
-        <button type="button" class="home-button1 button">Import Data</button>
-        <button type="button" class="home-button2 button">Export Data</button>
-        <button type="button" class="home-button3 button">Delete Data</button>
-    </nav>
+
     <div class="home-container1">
-        <div class=""/>
-        <div/>
-        <div/>
-        <div/>
+        <div class="grid-databox">
+            <h1>The time is {formatter.format($time)}</h1>
+            <h3>Map</h3>
+        </div>
+        <div class="grid-databox">
+            <h3>Data1</h3>
+            <Graph id={"0"}/>
+        </div>
+        <div class="grid-databox">
+            <h3>Data2</h3>
+            <Graph id={"1"}/>
+        </div>
+        <div class="grid-databox">
+            <h3>Data3</h3>
+            <Graph id={"2"}/>
+        </div>
     </div>
 </div>
+
 <footer class="home-footer1">
     <div class="home-container2">
         <span class="home-logo1">Group F Design</span>
@@ -63,61 +86,43 @@
 
 <style>
     .home-header {
-        width: 100%;
+        width: 100vw;
         display: flex;
+        position: fixed;
         align-items: center;
         padding-top: var(--dl-space-space-oneandhalfunits);
         flex-direction: column;
         padding-bottom: var(--dl-space-space-oneandhalfunits);
         background-color: #303030;
+        z-index: 100;
+        border-bottom: #262828 2px solid;
     }
-    .home-navbar-interactive {
-        width: 94%;
+    .home-navbar {
+        width: 95.5vw;
         display: flex;
         position: sticky;
-        min-height: 2vh;
+        min-height: 3vh;
         align-items: center;
-        padding-left: var(--dl-space-space-threeunits);
+        align-self: start;
+        background-color: rgb(89 129 161);
         border-radius: 0 50px 50px 0;
-        padding-right: var(--dl-space-space-threeunits);
+        padding: 0.5rem var(--dl-space-space-threeunits) 0.5rem var(--dl-space-space-twounits);
         justify-content: space-between;
-        background-color: #A0A0A0;
     }
     .home-logo {
-        font-size: 5vh;
+        font-size: 4vh;
         font-family: Verdana,serif;
         font-weight: bold;
         text-transform: capitalize;
     }
-    .home-desktop-menu {
-        flex: 1;
-        display: flex;
-        width: auto;
-        justify-content: space-between;
-    }
     .home-buttons {
-        border: 2px dashed rgba(120, 120, 120, 0.4);
+        position: absolute;
         display: flex;
+        width: 60vw;
+        padding-left: 20rem;
         align-items: center;
         flex-direction: row;
         justify-content: space-between;
-    }
-    .home-burger-menu {
-        display: none;
-    }
-    .home-mobile-menu {
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        display: none;
-        padding: 32px;
-        z-index: 100;
-        position: absolute;
-        border-radius: 50px;
-        flex-direction: column;
-        justify-content: space-between;
-        background-color: var(--dl-color-gray-white);
     }
     .home-footer {
         flex: 0 0 auto;
@@ -128,17 +133,20 @@
         align-items: center;
         justify-content: center;
         background-color: var(--dl-color-gray-black);
+        margin-top: 10vh;
     }
     .home-features {
         width: 80%;
         display: flex;
-        padding: var(--dl-space-space-threeunits);
+        padding: var(--dl-space-space-unit) var(--dl-space-space-threeunits);
+        margin-bottom: var(--dl-space-space-fourunits);
         position: relative;
         flex-direction: column;
     }
     .home-text {
         color: #ffffff;
-        font-size: 3rem;
+        font-size: 2.5rem;
+        text-decoration: underline;
         margin-bottom: var(--dl-space-space-threeunits);
     }
     .home-interaction {
@@ -147,9 +155,19 @@
         column-gap: 5%;
         min-height: 5vh;
         align-items: center;
-        margin-bottom: 2vh;
         justify-content: center;
         grid-auto-columns: 25% 25% 25% 25%;
+    }
+    .button {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-width: 1px;
+        border-radius: 4px;
+        min-height: fit-content;
+        min-height: 4vh;
+        background-color: #303030;
+        color: #ffffff;
+        border-color: #ffffff;
     }
     .home-button {
         border-radius: 1rem;
@@ -169,30 +187,29 @@
         position: relative;
         align-self: center;
         justify-content: center;
+        align-content: center;
         grid-template-columns: 1fr 1fr;
     }
+    .grid-databox {
+        text-align: center;
+    }
     .home-footer1 {
-        width: 100%;
+        width: 100vw;
         display: flex;
-        max-width: var(--dl-size-size-maxwidth);
         align-items: center;
-        padding-top: var(--dl-space-space-fourunits);
-        padding-left: var(--dl-space-space-threeunits);
-        padding-right: var(--dl-space-space-threeunits);
         flex-direction: column;
-        padding-bottom: var(--dl-space-space-fourunits);
+        padding: var(--dl-space-space-fourunits) var(--dl-space-space-twounits);
         justify-content: space-between;
+        background-color: #181e21;
     }
     .home-container2 {
         gap: var(--dl-space-space-oneandhalfunits);
         display: flex;
-        max-width: var(--dl-size-size-maxwidth);
         align-items: center;
         flex-direction: column;
         justify-content: flex-start;
     }
     .home-logo1 {
-        color: var(--dl-color-gray-white);
         font-size: 2em;
         font-style: italic;
         font-family: Verdana, serif;
@@ -200,7 +217,7 @@
     }
     .home-container3 {
         flex: 0 0 auto;
-        width: 100%;
+        width: 95%;
         display: flex;
         align-items: center;
         flex-direction: row;
@@ -232,82 +249,6 @@
         width: 24px;
         height: 24px;
     }
-    @media(max-width: 767px) {
-        .home-navbar-interactive {
-            padding-left: var(--dl-space-space-twounits);
-            padding-right: var(--dl-space-space-twounits);
-        }
-        .home-desktop-menu {
-            display: none;
-        }
-        .home-burger-menu {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .home-mobile-menu {
-            padding-top: var(--dl-space-space-oneandhalfunits);
-            padding-left: var(--dl-space-space-twounits);
-            padding-right: var(--dl-space-space-twounits);
-            padding-bottom: var(--dl-space-space-oneandhalfunits);
-        }
-        .home-features {
-            padding-left: var(--dl-space-space-twounits);
-            padding-right: var(--dl-space-space-twounits);
-        }
-        .home-container1 {
-            grid-template-columns: 1fr;
-        }
-        .home-footer1 {
-            padding-left: var(--dl-space-space-twounits);
-            padding-right: var(--dl-space-space-twounits);
-        }
-        .home-container3 {
-            align-items: center;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .home-text1 {
-            margin-bottom: var(--dl-space-space-oneandhalfunits);
-        }
-    }
-    @media(max-width: 479px) {
-        .home-navbar-interactive {
-            width: 90%;
-            padding: var(--dl-space-space-unit);
-        }
-
-        .home-logo {
-            font-size: 1.5em;
-        }
-
-        .home-mobile-menu {
-            padding: 16px;
-        }
-
-        .home-features {
-            padding-top: var(--dl-space-space-twounits);
-            padding-left: var(--dl-space-space-unit);
-            padding-right: var(--dl-space-space-unit);
-            padding-bottom: var(--dl-space-space-twounits);
-        }
-
-        .home-footer1 {
-            padding: var(--dl-space-space-unit);
-        }
-
-        .home-container3 {
-            align-items: center;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .home-text1 {
-            text-align: center;
-            margin-bottom: var(--dl-space-space-oneandhalfunits);
-        }
-    }
-
 
 </style>
 

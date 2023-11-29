@@ -1,31 +1,32 @@
 <html lang="en">
-<head>
-	<title>Water Sensor Data</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta charset="utf-8" />
-	<meta property="twitter:card" content="summary_large_image" />
+	<head>
+		<title>Water Sensor Data</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta charset="utf-8" />
+		<meta property="twitter:card" content="summary_large_image" />
 
-	%sveltekit.head%
+		%sveltekit.head%
 
-	<style data-tag="default-style-sheet">
-		html {
-			font-family: "Verdana", serif;
-			font-size: 16px;
-		}
+		<style data-tag="default-style-sheet">
+			html {
+				font-family: "Verdana", serif;
+				font-size: 16px;
+			}
 
-		body {
-			font-weight: 400;
-			font-style:normal;
-			text-decoration: none;
-			text-transform: none;
-			letter-spacing: normal;
-			line-height: 1.15;
-			color: var(--dl-color-gray-black);
-			background-color: var(--dl-color-gray-white);
-
-		}
-	</style>
-</head>
+			body {
+				font-weight: 400;
+				font-style:normal;
+				max-width: 1920px;
+				text-decoration: none;
+				text-transform: none;
+				letter-spacing: normal;
+				line-height: 1.15;
+				color: #ffffff;
+				background-color: #131516;
+				overflow-x: hidden;
+			}
+		</style>
+	</head>
 	<body data-sveltekit-preload-data="hover" style="margin: 0">
 		<div class="home-container">
 			%sveltekit.body%
@@ -34,19 +35,17 @@
 </html>
 
 <style>
-
 	:root {
 		--dl-color-gray-500: #595959;
 		--dl-color-gray-700: #999999;
-		--dl-color-gray-800: #595959;
+		--dl-color-gray-800: #2e3234;
 		--dl-color-gray-900: #D9D9D9;
 		--dl-size-size-large: 144px;
 		--dl-size-size-small: 48px;
 		--dl-color-danger-300: #A22020;
 		--dl-color-danger-500: #BF2626;
 		--dl-color-danger-700: #E14747;
-		--dl-color-gray-black: #000000;
-		--dl-color-gray-white: #FFFFFF;
+		--dl-color-gray-black: rgb(1, 1, 1);
 		--dl-size-size-medium: 96px;
 		--dl-size-size-xlarge: 192px;
 		--dl-size-size-xsmall: 16px;
@@ -78,22 +77,10 @@
 		--dl-space-space-oneandhalfunits: 24px;
 	}
 	.home-container {
-		width: 100%;
-		height: 100%;
+		width: 100vw;
 		display: flex;
-		overflow: hidden;
-		min-height: 100vh;
 		align-items: center;
 		flex-direction: column;
 		background-color: var(--dl-color-gray-800);
-	}
-	.button {
-		color: var(--dl-color-gray-black);
-		display: inline-block;
-		padding: 0.5rem 1rem;
-		border-color: var(--dl-color-gray-black);
-		border-width: 1px;
-		border-radius: 4px;
-		background-color: var(--dl-color-gray-white);
 	}
 </style>
