@@ -4,7 +4,7 @@
 
 <MapLibre
     center={[-0.594589, 51.246210]}
-    zoom={7}
+    zoom={15}
     class="map"
     standardControls
     style={"https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"}
