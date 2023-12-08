@@ -3,6 +3,44 @@
 
     import Graph from "./Graph.svelte";
     import Map from "./Map.svelte";
+    import Doughnut from "./Doughnut.svelte";
+    import {onMount} from "svelte";
+
+    let loaded = false;
+
+    let tempGraph = {}
+    let temp, pH, Turb, TDS;
+
+    onMount(() => {
+
+        let ttemp = 19.00;
+        let tpH = 7.0;
+        let tTurb = 0.5;
+        let tTDS = 370.0;
+
+        tempGraph = {index: [], temp: [], pH: [], Turb: [], TDS: []}
+
+        for (let i = 0; i <= 100; i++) {
+            tempGraph.index.push(i)
+            tempGraph.temp.push(ttemp)
+            tempGraph.pH.push(tpH)
+            tempGraph.Turb.push(tTurb)
+            tempGraph.TDS.push(tTDS)
+
+            ttemp += (Math.random() / 2) - 0.25;
+            tpH += (Math.random()/10.0) - 0.05;
+            tTurb += (Math.random() / 10.0) - 0.05;
+            tTDS += (Math.random() * 2.0) - 1.0;
+        }
+
+        console.log(tempGraph)
+        loaded = true;
+
+        temp = (Math.round(tempGraph.temp[100] * 100) / 100).toFixed(2);
+        pH = (Math.round(tempGraph.pH[100] * 100) / 100).toFixed(2);
+        Turb = (Math.round(tempGraph.Turb[100] * 100) / 100).toFixed(2);
+        TDS = (Math.round(tempGraph.TDS[100] * 100) / 100).toFixed(1);
+    })
 
     const formatter = new Intl.DateTimeFormat('en', {
         hour12: true,
@@ -16,12 +54,14 @@
         alert("Button!");
     }
 
+
+
 </script>
 
-
+{#if loaded}
 <div class="home-header">
     <header class="home-navbar">
-        <span class="home-logo">Water Sensor</span>
+        <span class="home-logo">AquaMeter</span>
             <div class="home-buttons">
                 <nav class="home-interaction">
                     <button type="button" class="home-button button" on:click={clickHandle}>Save Data</button>
@@ -35,27 +75,54 @@
 </div>
 
 <div class="home-footer"></div>
+
 <div class="home-features">
-    <h1 class="home-text">Data:</h1>
+    <div class="data-bar">
+        <h1 class="home-text">Data:</h1>
+        <div class="doughnutValues">
+            <div class="doughnutDiv">
+                <h4>Temp.</h4>
+                <Doughnut id={"1"} label="Temp" data={temp} max={50}/>
+                <h3 class="doughnutText">{temp}</h3>
+            </div>
+            <div class="doughnutDiv">
+                <h4>pH.</h4>
+                <Doughnut id={"2"} label="Temp" data={pH} max={14}/>
+                <h3 class="doughnutText">{pH}</h3>
+            </div>
+            <div class="doughnutDiv">
+                <h4>Turb.</h4>
+                <Doughnut id={"3"} label="Temp" data={Turb} max={1}/>
+                <h3 class="doughnutText">{Turb}</h3>
+            </div>
+            <div class="doughnutDiv">
+                <h4>TDS.</h4>
+                <Doughnut id={"4"} label="Temp" data={TDS} max={1200}/>
+                <h3 class="doughnutText">{TDS}</h3>
+            </div>
+        </div>
+    </div>
+
 
     <div class="home-container1">
         <div class="grid-databox">
-            <h3>Data1</h3>
-            <Graph id={"0"}/>
+            <h3>Temperature</h3>
+            <Graph id={"0"} labels={tempGraph.index} values={tempGraph.temp}/>
         </div>
         <div class="grid-databox">
-            <h3>Data1</h3>
-            <Graph id={"1"}/>
+            <h3>pH Level</h3>
+            <Graph id={"1"} labels={tempGraph.index} values={tempGraph.pH}/>
         </div>
         <div class="grid-databox">
-            <h3>Data2</h3>
-            <Graph id={"2"}/>
+            <h3>Turbidity</h3>
+            <Graph id={"2"} labels={tempGraph.index} values={tempGraph.Turb}/>
         </div>
         <div class="grid-databox">
-            <h3>Data3</h3>
-            <Graph id={"3"}/>
+            <h3>TDS</h3>
+            <Graph id={"3"} labels={tempGraph.index} values={tempGraph.TDS}/>
         </div>
     </div>
+
     <h1>The time is {formatter.format($time)}</h1>
     <h3>Map</h3>
     <Map />
@@ -87,6 +154,7 @@
     </div>
 </footer>
 
+{/if}
 
 <style>
     .home-header {
@@ -108,26 +176,32 @@
         min-height: 3vh;
         align-items: center;
         align-self: start;
-        background-color: rgb(89 129 161);
+        background: rgb(89 129 161);
+        background: linear-gradient(108deg, rgba(140,82,255,1) 0%, rgba(92,225,230,1) 100%);
         border-radius: 0 50px 50px 0;
         padding: 0.5rem var(--dl-space-space-threeunits) 0.5rem var(--dl-space-space-twounits);
         justify-content: space-between;
     }
     .home-logo {
-        font-size: 4vh;
-        font-family: Verdana,serif;
+        font-size: calc(2vw + 2vh);
+        font-family: 'MonaKo',sans-serif;
         font-weight: bold;
         text-transform: capitalize;
     }
     .home-buttons {
-        position: absolute;
         display: flex;
         width: 60vw;
-        padding-left: 20rem;
+        padding-left: 0;
         align-items: center;
         flex-direction: row;
         justify-content: space-between;
+        & nav button {
+            font-size: 1.25vw;
+            width: max-content;
+            text-wrap: nowrap;
+        };
     }
+
     .home-footer {
         flex: 0 0 auto;
         width: 100%;
@@ -139,8 +213,15 @@
         background-color: var(--dl-color-gray-black);
         margin-top: 10vh;
     }
+    .data-bar {
+        display: flex;
+        padding-top: 5vh;
+        padding-left: 5vw;
+    }
+
     .home-features {
-        width: 80%;
+        width: 100vw;
+        align-self: center;
         display: flex;
         padding: var(--dl-space-space-unit) var(--dl-space-space-threeunits);
         margin-bottom: var(--dl-space-space-fourunits);
@@ -149,7 +230,7 @@
     }
     .home-text {
         color: #ffffff;
-        font-size: 2.5rem;
+        font-size: calc(2vw + 2vh);
         text-decoration: underline;
         margin-bottom: 0;
     }
@@ -186,20 +267,53 @@
     }
     .home-container1 {
         display: grid;
-        grid-gap: 2vw;
-        height: fit-content;
-        position: relative;
         align-self: center;
+        width: 80vw;
+        grid-gap: 2vw;
+        position: relative;
         justify-content: center;
         align-content: center;
         grid-template-columns: 1fr 1fr;
-        margin-bottom: 2vh;
+        margin-bottom: 3vh;
     }
     .grid-databox {
         text-align: center;
-        width: 35vw;
-        height: 40vh;
+        width: 40vw;
+        height: 25vh;
+        margin-bottom: 5vh;
+        align-items: center;
+
     }
+
+    .doughnutValues {
+        display: grid;
+        grid-auto-flow: column;
+        grid-column-gap: 1vw;
+        width: 60vw;
+        padding-left: 5vw;
+        align-self: center;
+    }
+
+    .doughnutDiv {
+        text-align: -webkit-center;
+        display: grid;
+        height: fit-content;
+        width: 10vw;
+        align-items: center;
+        padding: 0 2vw 0 2vw;
+        grid-auto-columns: 1fr 1fr;
+        & canvas {
+            grid-column: 1;
+            grid-row: 1;
+        }
+    }
+
+    .doughnutText {
+        grid-column: 1;
+        grid-row: 1;
+        font-size: 2vw;
+    }
+
     .home-footer1 {
         width: 100vw;
         display: flex;
@@ -255,6 +369,39 @@
         fill: var(--dl-color-secondary-gray500);
         width: 24px;
         height: 24px;
+    }
+    @media screen and (max-width: 600px) {
+        .home-navbar {
+            width: 90vw;
+            padding: 0 10vw 0 1vw;
+        }
+
+        .home-logo {
+            padding-right: 4vw;
+        }
+
+        .home-buttons nav button {
+            font-size: 0.6rem;
+            text-wrap: wrap;
+        }
+        .home-buttons nav {
+            padding-left: 1vw;
+        }
+
+        .home-features {
+            width: 90vw;
+        }
+        .data-bar {
+            padding-top: 0;
+            padding-left: 2vw;
+        }
+        .doughnutDiv {
+            width: 12vw;
+        }
+        .home-container1 {
+            width: 90vw;
+            align-self: center;
+        }
     }
 
 </style>

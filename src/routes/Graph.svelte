@@ -3,34 +3,42 @@
     import {Chart} from "chart.js/auto";
 
     export let id;
+    export let labels;
+    export let values;
+
 
     const config = {
         type: 'line',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: [...labels],
             datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
+                data: [...values],
                 borderWidth: 1
             }]
         },
         options: {
+            maintainAspectRatio: false,
+            aspectRatio: 2.5,
             scales: {
                 y: {
                     beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
                 }
             }
         }
     };
 
 
-
     let createChart = () => {
-        let ctx = document.getElementById(`myChart${id}`);
+        let ctx = document.getElementById(`lineChart${id}`);
         let myChart = new Chart(ctx, config);
     }
 
     onMount(createChart)
 </script>
 
-<canvas id={`myChart${id}`}></canvas>
+<canvas id={`lineChart${id}`} style="width:30vw"></canvas>
