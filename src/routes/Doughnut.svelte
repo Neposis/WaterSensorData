@@ -3,32 +3,40 @@
     import {onMount} from "svelte";
 
     export let id;
-    export let label, data, max;
+    export let label, value, max;
+
+    let config
+    let charty
 
     let createChart = () => {
-        let ctx = document.getElementById(`doughnutChart${id}`).getContext('2d');
 
-         let gradient = ctx.createLinearGradient(0, 0, 200, 0);
+        let canvas = document.getElementById(`doughnutChart${id}`);
+        let ctx = canvas.getContext('2d')
 
-         gradient.addColorStop(0, 'rgb(15,255,0)'); // End color
-        gradient.addColorStop(1, 'rgb(255,0,0)'); // Start color
+        let gradient = ctx.createLinearGradient(0, 0, 180, 0);
 
-        const config = {
+        gradient.addColorStop(0, 'rgb(15,255,0)'); // Start color
+        gradient.addColorStop(0.3, 'rgb(255,204,0)'); // Mid color
+        gradient.addColorStop(0.8, 'rgb(255,0,0)'); // End color
+
+        let x = max-value
+        if (x < 0) {x = 0}
+
+        config = {
             type: 'doughnut',
             data: {
                 labels: [label],
                 datasets: [{
-                    data: [data, max-data],
+                    data: [value, max-value],
                     backgroundColor: [gradient, "rgba(0,0,0,0.5)"],
                     borderColor: ['', 'transparent'],
                 }]
             },
             options: {
-                // cutoutPercentage: 80, // Adjust the cutout percentage to create a doughnut effect
-                responsive: false,
+                responsive: true,
                 maintainAspectRatio: true,
-                circumference: 360,
-                rotation: -90,
+                circumference: 220,
+                rotation: -110,
                 cutout: "80%",
                 events: [],
                 tooltips: {
@@ -42,10 +50,19 @@
             }
         };
 
-        let myChart = new Chart(ctx, config);
+        charty = new Chart(ctx, config);
     }
 
     onMount(createChart)
+
+    const interval = setInterval(() => {
+        charty.data.datasets[0].data[0] = value;
+        let x = max-value
+        if (x < 0) {x = 0}
+        charty.data.datasets[0].data[1] = x;
+        charty.update();
+    }, 1000);
+
 </script>
 
 <canvas id={`doughnutChart${id}`} style="width: 100%"></canvas>

@@ -1,46 +1,28 @@
 <script>
-    import {time} from "../store.js";
+    import {time, arduino_data} from "../stores.js";
 
     import Graph from "./Graph.svelte";
     import Map from "./Map.svelte";
     import Doughnut from "./Doughnut.svelte";
     import {onMount} from "svelte";
 
+    let dataGraph;
+    let locationData;
+
     let loaded = false;
 
-    let tempGraph = {}
-    let temp, pH, Turb, TDS;
-
     onMount(() => {
+        dataGraph = {time: [], celsius: [], fahrenheit: [], tds: [], ph: [], turbidity: []}
+        locationData = {time: [], longitude: [], latitude: []}
 
-        let ttemp = 19.00;
-        let tpH = 7.0;
-        let tTurb = 0.5;
-        let tTDS = 370.0;
-
-        tempGraph = {index: [], temp: [], pH: [], Turb: [], TDS: []}
-
-        for (let i = 0; i <= 100; i++) {
-            tempGraph.index.push(i)
-            tempGraph.temp.push(ttemp)
-            tempGraph.pH.push(tpH)
-            tempGraph.Turb.push(tTurb)
-            tempGraph.TDS.push(tTDS)
-
-            ttemp += (Math.random() / 2) - 0.25;
-            tpH += (Math.random()/10.0) - 0.05;
-            tTurb += (Math.random() / 10.0) - 0.05;
-            tTDS += (Math.random() * 2.0) - 1.0;
-        }
-
-        console.log(tempGraph)
-        loaded = true;
-
-        temp = (Math.round(tempGraph.temp[100] * 100) / 100).toFixed(2);
-        pH = (Math.round(tempGraph.pH[100] * 100) / 100).toFixed(2);
-        Turb = (Math.round(tempGraph.Turb[100] * 100) / 100).toFixed(2);
-        TDS = (Math.round(tempGraph.TDS[100] * 100) / 100).toFixed(1);
+        const loadInterval = setInterval(() => {
+            if ($arduino_data.celsius !== undefined) {
+                loaded = true;
+                clearInterval(loadInterval)
+            }
+        }, 100);
     })
+
 
     const formatter = new Intl.DateTimeFormat('en', {
         hour12: true,
@@ -53,9 +35,6 @@
 
         alert("Button!");
     }
-
-
-
 </script>
 
 {#if loaded}
@@ -81,24 +60,29 @@
         <h1 class="home-text">Data:</h1>
         <div class="doughnutValues">
             <div class="doughnutDiv">
-                <h4>Temp.</h4>
-                <Doughnut id={"1"} label="Temp" data={temp} max={50}/>
-                <h3 class="doughnutText">{temp}</h3>
+                <h4>Temp. (oC)</h4>
+                <Doughnut id={"0"} label="Celsius" value={$arduino_data.celsius} max={50}/>
+                <h3 class="doughnutText">{$arduino_data.celsius}</h3>
             </div>
             <div class="doughnutDiv">
-                <h4>pH.</h4>
-                <Doughnut id={"2"} label="Temp" data={pH} max={14}/>
-                <h3 class="doughnutText">{pH}</h3>
+                <h4>Temp. (oF)</h4>
+                <Doughnut id={"1"} label="Fahrenheit" value={$arduino_data.fahrenheit} max={162}/>
+                <h3 class="doughnutText">{$arduino_data.fahrenheit}</h3>
+            </div>
+            <div class="doughnutDiv">
+                <h4>pH</h4>
+                <Doughnut id={"2"} label="pH" value={$arduino_data.ph} max={14}/>
+                <h3 class="doughnutText">{$arduino_data.ph}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>Turb.</h4>
-                <Doughnut id={"3"} label="Temp" data={Turb} max={1}/>
-                <h3 class="doughnutText">{Turb}</h3>
+                <Doughnut id={"3"} label="Turb" value={$arduino_data.turbidity} max={1}/>
+                <h3 class="doughnutText">{$arduino_data.turbidity}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>TDS.</h4>
-                <Doughnut id={"4"} label="Temp" data={TDS} max={1200}/>
-                <h3 class="doughnutText">{TDS}</h3>
+                <Doughnut id={"4"} label="TDS" value={$arduino_data.tds} max={1200}/>
+                <h3 class="doughnutText">{$arduino_data.tds}</h3>
             </div>
         </div>
     </div>
@@ -107,25 +91,25 @@
     <div class="home-container1">
         <div class="grid-databox">
             <h3>Temperature</h3>
-            <Graph id={"0"} labels={tempGraph.index} values={tempGraph.temp}/>
+            <Graph id={"0"} labels={dataGraph.time} values={dataGraph.celsius}/>
         </div>
         <div class="grid-databox">
             <h3>pH Level</h3>
-            <Graph id={"1"} labels={tempGraph.index} values={tempGraph.pH}/>
+            <Graph id={"1"} labels={dataGraph.time} values={dataGraph.ph}/>
         </div>
         <div class="grid-databox">
             <h3>Turbidity</h3>
-            <Graph id={"2"} labels={tempGraph.index} values={tempGraph.Turb}/>
+            <Graph id={"2"} labels={dataGraph.time} values={dataGraph.turbidity}/>
         </div>
         <div class="grid-databox">
             <h3>TDS</h3>
-            <Graph id={"3"} labels={tempGraph.index} values={tempGraph.TDS}/>
+            <Graph id={"3"} labels={dataGraph.time} values={dataGraph.tds}/>
         </div>
     </div>
 
     <h1>The time is {formatter.format($time)}</h1>
     <h3>Map</h3>
-    <Map />
+    <Map lon={$arduino_data.longitude} lat={$arduino_data.latitude} />
 </div>
 
 <footer class="home-footer1">
@@ -157,6 +141,7 @@
 {/if}
 
 <style>
+
     .home-header {
         width: 100vw;
         display: flex;
@@ -165,9 +150,9 @@
         padding-top: var(--dl-space-space-oneandhalfunits);
         flex-direction: column;
         padding-bottom: var(--dl-space-space-oneandhalfunits);
-        background-color: #303030;
+        background-color: rgb(48, 48, 48);
         z-index: 100;
-        border-bottom: #262828 2px solid;
+        border-bottom: rgb(38, 40, 40) 2px solid;
     }
     .home-navbar {
         width: 95.5vw;
@@ -229,8 +214,8 @@
         flex-direction: column;
     }
     .home-text {
-        color: #ffffff;
-        font-size: calc(2vw + 2vh);
+        color: rgb(255, 255, 255);
+        font-size: calc(1.2vw + 1.2vh);
         text-decoration: underline;
         margin-bottom: 0;
     }
@@ -249,9 +234,9 @@
         border-width: 1px;
         border-radius: 4px;
         min-height: 4vh;
-        background-color: #303030;
-        color: #ffffff;
-        border-color: #ffffff;
+        background-color: rgb(48, 48, 48);
+        color: rgb(255, 255, 255);
+        border-color: rgb(255, 255, 255);
     }
     .home-button {
         border-radius: 1rem;
@@ -298,20 +283,26 @@
         text-align: -webkit-center;
         display: grid;
         height: fit-content;
-        width: 10vw;
+        width: 8vw;
         align-items: center;
         padding: 0 2vw 0 2vw;
         grid-auto-columns: 1fr 1fr;
         & canvas {
             grid-column: 1;
             grid-row: 1;
-        }
+            position: relative;
+            top: -2vh;
+        };
+        & h4 {
+            position: relative;
+            top: -5vh;
+        };
     }
 
     .doughnutText {
         grid-column: 1;
         grid-row: 1;
-        font-size: 2vw;
+        font-size: 1.5vw;
     }
 
     .home-footer1 {
@@ -321,7 +312,7 @@
         flex-direction: column;
         padding: var(--dl-space-space-fourunits) var(--dl-space-space-twounits);
         justify-content: space-between;
-        background-color: #181e21;
+        background-color: rgb(24, 30, 33);
     }
     .home-container2 {
         gap: var(--dl-space-space-oneandhalfunits);
