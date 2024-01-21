@@ -18,7 +18,7 @@ arduino_data = readable({}, function start(set) {
     let ws, connection_finished;
     onMount(() => {
 
-         ws = new WebSocket("ws://localhost:433")
+         ws = new WebSocket("ws://localhost:8085")
 
          connection_finished = false;
 
@@ -60,7 +60,8 @@ arduino_data = readable({}, function start(set) {
         });
 
         ws.addEventListener('error', (error) => {
-            console.error(`WebSocket error: ${error.message}`);
+            console.error(`WebSocket error:`);
+            console.error(error)
         });
 
         return function stop() {

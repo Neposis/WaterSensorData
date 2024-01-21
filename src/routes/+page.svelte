@@ -114,12 +114,12 @@
             </div>
             <div class="doughnutDiv">
                 <h4>Turb.</h4>
-                <Doughnut id={"3"} label="Turb" value={$arduino_data.turbidity} max={1} bind:update_trigger={doughnutUpdate.turbidity}/>
-                <h3 class="doughnutText">{$arduino_data.turbidity}</h3>
+                <Doughnut id={"3"} label="Turb" value={$arduino_data.turbidity} max={5000} bind:update_trigger={doughnutUpdate.turbidity}/>
+                <h3 class="doughnutTextSmaller">{$arduino_data.turbidity}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>TDS.</h4>
-                <Doughnut id={"4"} label="TDS" value={$arduino_data.tds} max={1200} bind:update_trigger={doughnutUpdate.tds}/>
+                <Doughnut id={"4"} label="TDS" value={$arduino_data.tds} max={200} bind:update_trigger={doughnutUpdate.tds}/>
                 <h3 class="doughnutText">{$arduino_data.tds}</h3>
             </div>
         </div>
@@ -341,6 +341,12 @@
         grid-column: 1;
         grid-row: 1;
         font-size: 1.5vw;
+    }
+
+    .doughnutTextSmaller {
+        grid-column: 1;
+        grid-row: 1;
+        font-size: 1.0vw;
     }
 
     .home-footer1 {
