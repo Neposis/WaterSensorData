@@ -6,8 +6,13 @@
     export let labels;
     export let values;
 
+    export const update_trigger = () => {
+        config.data.labels = labels.slice(-100);
+        config.data.datasets[0].data = values.slice(-100);
+        charty.update('none')
+    }
 
-    const config = {
+    let config = {
         type: 'line',
         data: {
             labels: [...labels],
@@ -32,10 +37,11 @@
         }
     };
 
+    let charty;
 
     let createChart = () => {
         let ctx = document.getElementById(`lineChart${id}`);
-        let myChart = new Chart(ctx, config);
+        charty = new Chart(ctx, config);
     }
 
     onMount(createChart)

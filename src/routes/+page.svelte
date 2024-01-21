@@ -1,19 +1,32 @@
 <script>
     import {time, arduino_data} from "../stores.js";
-
     import Graph from "./Graph.svelte";
     import Map from "./Map.svelte";
     import Doughnut from "./Doughnut.svelte";
-    import {onMount} from "svelte";
+    import {onMount, afterUpdate} from "svelte";
 
-    let dataGraph;
-    let locationData;
+    let dataGraph = {time: [], celsius: [], fahrenheit: [], tds: [], ph: [], turbidity: []};
 
     let loaded = false;
 
+    let doughnutUpdate = {
+        celsius: () => {},
+        fahrenheit: () => {},
+        tds: () => {},
+        ph: () => {},
+        turbidity: () => {}
+    }
+    let graphUpdate = {
+        celsius: () => {},
+        fahrenheit: () => {},
+        tds: () => {},
+        ph: () => {},
+        turbidity: () => {}
+    }
+
+
     onMount(() => {
         dataGraph = {time: [], celsius: [], fahrenheit: [], tds: [], ph: [], turbidity: []}
-        locationData = {time: [], longitude: [], latitude: []}
 
         const loadInterval = setInterval(() => {
             if ($arduino_data.celsius !== undefined) {
@@ -22,6 +35,31 @@
             }
         }, 100);
     })
+
+    $: $arduino_data, updateGraph();
+    function updateGraph() {
+        if (loaded) {
+            dataGraph.time.push(new Date($arduino_data.time * 1000).toLocaleTimeString())
+            dataGraph.celsius.push($arduino_data.celsius)
+            dataGraph.fahrenheit.push($arduino_data.fahrenheit)
+            dataGraph.tds.push($arduino_data.tds)
+            dataGraph.ph.push($arduino_data.ph)
+            dataGraph.turbidity.push($arduino_data.turbidity)
+
+            if (dataGraph.time.length >= 100) {
+                for (const i of Object.keys(dataGraph)) {
+                    dataGraph[i] = dataGraph[i].slice(-100);
+                }
+            }
+
+            for (const i of Object.keys(doughnutUpdate)) {
+                doughnutUpdate[i]()
+            }
+            for (const i of Object.keys(graphUpdate)) {
+                graphUpdate[i]()
+            }
+        }
+    }
 
 
     const formatter = new Intl.DateTimeFormat('en', {
@@ -61,27 +99,27 @@
         <div class="doughnutValues">
             <div class="doughnutDiv">
                 <h4>Temp. (oC)</h4>
-                <Doughnut id={"0"} label="Celsius" value={$arduino_data.celsius} max={50}/>
+                <Doughnut id={"0"} label="Celsius" value={$arduino_data.celsius} max={50} bind:update_trigger={doughnutUpdate.celsius}/>
                 <h3 class="doughnutText">{$arduino_data.celsius}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>Temp. (oF)</h4>
-                <Doughnut id={"1"} label="Fahrenheit" value={$arduino_data.fahrenheit} max={162}/>
+                <Doughnut id={"1"} label="Fahrenheit" value={$arduino_data.fahrenheit} max={162} bind:update_trigger={doughnutUpdate.fahrenheit}/>
                 <h3 class="doughnutText">{$arduino_data.fahrenheit}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>pH</h4>
-                <Doughnut id={"2"} label="pH" value={$arduino_data.ph} max={14}/>
+                <Doughnut id={"2"} label="pH" value={$arduino_data.ph} max={14} bind:update_trigger={doughnutUpdate.ph}/>
                 <h3 class="doughnutText">{$arduino_data.ph}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>Turb.</h4>
-                <Doughnut id={"3"} label="Turb" value={$arduino_data.turbidity} max={1}/>
+                <Doughnut id={"3"} label="Turb" value={$arduino_data.turbidity} max={1} bind:update_trigger={doughnutUpdate.turbidity}/>
                 <h3 class="doughnutText">{$arduino_data.turbidity}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>TDS.</h4>
-                <Doughnut id={"4"} label="TDS" value={$arduino_data.tds} max={1200}/>
+                <Doughnut id={"4"} label="TDS" value={$arduino_data.tds} max={1200} bind:update_trigger={doughnutUpdate.tds}/>
                 <h3 class="doughnutText">{$arduino_data.tds}</h3>
             </div>
         </div>
@@ -91,19 +129,19 @@
     <div class="home-container1">
         <div class="grid-databox">
             <h3>Temperature</h3>
-            <Graph id={"0"} labels={dataGraph.time} values={dataGraph.celsius}/>
+            <Graph id={"0"} labels={dataGraph.time} values={dataGraph.celsius} bind:update_trigger={graphUpdate.celsius}/>
         </div>
         <div class="grid-databox">
             <h3>pH Level</h3>
-            <Graph id={"1"} labels={dataGraph.time} values={dataGraph.ph}/>
+            <Graph id={"1"} labels={dataGraph.time} values={dataGraph.ph} bind:update_trigger={graphUpdate.ph}/>
         </div>
         <div class="grid-databox">
             <h3>Turbidity</h3>
-            <Graph id={"2"} labels={dataGraph.time} values={dataGraph.turbidity}/>
+            <Graph id={"2"} labels={dataGraph.time} values={dataGraph.turbidity} bind:update_trigger={graphUpdate.turbidity}/>
         </div>
         <div class="grid-databox">
             <h3>TDS</h3>
-            <Graph id={"3"} labels={dataGraph.time} values={dataGraph.tds}/>
+            <Graph id={"3"} labels={dataGraph.time} values={dataGraph.tds} bind:update_trigger={graphUpdate.tds}/>
         </div>
     </div>
 

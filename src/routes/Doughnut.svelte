@@ -2,11 +2,21 @@
     import {Chart} from "chart.js/auto";
     import {onMount} from "svelte";
 
+
     export let id;
     export let label, value, max;
 
-    let config
-    let charty
+    export const update_trigger = () => {
+        charty.data.datasets[0].data[0] = value;
+        let x = max - value
+        if (x < 0) {x = 0}
+        charty.data.datasets[0].data[1] = x;
+        charty.update();
+    }
+
+
+    let config;
+    let charty;
 
     let createChart = () => {
 
@@ -54,14 +64,6 @@
     }
 
     onMount(createChart)
-
-    const interval = setInterval(() => {
-        charty.data.datasets[0].data[0] = value;
-        let x = max-value
-        if (x < 0) {x = 0}
-        charty.data.datasets[0].data[1] = x;
-        charty.update();
-    }, 1000);
 
 </script>
 
