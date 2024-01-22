@@ -3,7 +3,7 @@
     import Graph from "./Graph.svelte";
     import Map from "./Map.svelte";
     import Doughnut from "./Doughnut.svelte";
-    import {onMount, afterUpdate} from "svelte";
+    import {onMount} from "svelte";
 
     let dataGraph = {time: [], celsius: [], fahrenheit: [], tds: [], ph: [], turbidity: []};
 
@@ -62,6 +62,7 @@
     }
 
 
+
     const formatter = new Intl.DateTimeFormat('en', {
         hour12: true,
         hour: 'numeric',
@@ -69,9 +70,96 @@
         second: '2-digit'
     });
 
-    let clickHandle = () => {
+    let deleteData = () => {
+        let ws = new WebSocket("ws://localhost:8085")
+        let connection_finished = 0
 
-        alert("Button!");
+        ws.addEventListener('open',() => {
+            console.log('Connected to WebSocket for commands');
+        });
+
+        ws.addEventListener('message', (data) => {
+            data = data.data;
+
+            if (!connection_finished) {
+                if (data === "State your business!") {
+                    ws.send("I'm a WebClient");
+                } else if (data === "Ok fine, you can join in...") {
+                    connection_finished = true;
+                } else if (data === "Go away, I don't know who you are!") {
+                    console.error("Something went wrong, I got denied...");
+                    alert("Failed to delete data...")
+                    ws.close();
+                }
+
+            } else {
+                ws.send(JSON.stringify({command: "delete"}));
+                dataGraph = {time: [], celsius: [], fahrenheit: [], tds: [], ph: [], turbidity: []}
+                alert("Deleted data!");
+                ws.close();
+            }
+
+        });
+
+        ws.addEventListener('close', () => {
+            console.log('Connection closed');
+        });
+
+        ws.addEventListener('error', (error) => {
+            console.error(`WebSocket error:`);
+            console.error(error)
+            alert("Failed to delete data... Websocket errored")
+        });
+    }
+
+    let exportData = () => {
+        let ws = new WebSocket("ws://localhost:8085")
+        let connection_finished = 0
+
+        ws.addEventListener('open',() => {
+            console.log('Connected to WebSocket for commands');
+        });
+
+        ws.addEventListener('message', (data) => {
+            data = data.data;
+            console.info(data)
+
+            if (!connection_finished) {
+                if (data === "State your business!") {
+                    ws.send("I'm a WebClient");
+                } else if (data === "Ok fine, you can join in...") {
+                    connection_finished = true;
+                    ws.send(JSON.stringify({command: "export"}));
+                } else if (data === "Go away, I don't know who you are!") {
+                    console.error("Something went wrong, I got denied...");
+                    alert("Failed to export data...")
+                    ws.close();
+                }
+
+            } else {
+                data = JSON.parse(data)
+                if (data.command === "exportReady") {
+                    let a = document.createElement('a');
+                    document.body.append(a)
+                    a.download = "download"
+                    a.href = "./ExportedData.xlsx"
+                    a.click()
+                    a.remove()
+                    ws.close()
+                }
+            }
+
+        });
+
+        ws.addEventListener('close', () => {
+            console.log('Connection closed');
+        });
+
+        ws.addEventListener('error', (error) => {
+            console.error(`WebSocket error:`);
+            console.error(error)
+            alert("Failed to export data... Websocket errored")
+        });
     }
 </script>
 
@@ -81,10 +169,10 @@
         <span class="home-logo">AquaMeter</span>
             <div class="home-buttons">
                 <nav class="home-interaction">
-                    <button type="button" class="home-button button" on:click={clickHandle}>Save Data</button>
+<!--                    <button type="button" class="home-button button">Save Data</button>-->
                     <button type="button" class="home-button1 button">Import Data</button>
-                    <button type="button" class="home-button2 button">Export Data</button>
-                    <button type="button" class="home-button3 button">Delete Data</button>
+                    <button type="button" class="home-button2 button" on:click={exportData}>Export Data</button>
+                    <button type="button" class="home-button3 button" on:click={deleteData}>Delete Data</button>
                 </nav>
             </div>
 

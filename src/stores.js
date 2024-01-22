@@ -1,4 +1,4 @@
-import { readable, writable } from 'svelte/store';
+import { readable } from 'svelte/store';
 import { onMount } from 'svelte';
 
 
@@ -12,9 +12,8 @@ export const time = readable(new Date(), function start(set) {
     };
 });
 
-export let arduino_data = () => {}
 
-arduino_data = readable({}, function start(set) {
+export let arduino_data = readable({}, function start(set) {
     let ws, connection_finished;
     onMount(() => {
 
