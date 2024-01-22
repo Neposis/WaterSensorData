@@ -112,7 +112,57 @@
         });
     }
 
-    let exportData = () => {
+    let exportJsonData = () => {
+        let ws = new WebSocket("ws://localhost:8085")
+        let connection_finished = 0
+
+        ws.addEventListener('open',() => {
+            console.log('Connected to WebSocket for commands');
+        });
+
+        ws.addEventListener('message', (data) => {
+            data = data.data;
+            console.info(data)
+
+            if (!connection_finished) {
+                if (data === "State your business!") {
+                    ws.send("I'm a WebClient");
+                } else if (data === "Ok fine, you can join in...") {
+                    connection_finished = true;
+                    ws.send(JSON.stringify({command: "exportJson"}));
+                } else if (data === "Go away, I don't know who you are!") {
+                    console.error("Something went wrong, I got denied...");
+                    alert("Failed to export data...")
+                    ws.close();
+                }
+
+            } else {
+                data = JSON.parse(data)
+                if (data.command === "exportReady") {
+                    let a = document.createElement('a');
+                    document.body.append(a)
+                    a.download = "download"
+                    a.href = "./ExportedData.json"
+                    a.click()
+                    a.remove()
+                    ws.close()
+                }
+            }
+
+        });
+
+        ws.addEventListener('close', () => {
+            console.log('Connection closed');
+        });
+
+        ws.addEventListener('error', (error) => {
+            console.error(`WebSocket error:`);
+            console.error(error)
+            alert("Failed to export data... Websocket errored")
+        });
+    }
+
+    let exportExcelData = () => {
         let ws = new WebSocket("ws://localhost:8085")
         let connection_finished = 0
 
@@ -170,8 +220,8 @@
             <div class="home-buttons">
                 <nav class="home-interaction">
 <!--                    <button type="button" class="home-button button">Save Data</button>-->
-                    <button type="button" class="home-button1 button">Import Data</button>
-                    <button type="button" class="home-button2 button" on:click={exportData}>Export Data</button>
+                    <button type="button" class="home-button1 button" on:click={exportJsonData}>Export to JSON</button>
+                    <button type="button" class="home-button2 button" on:click={exportExcelData}>Export to Excel</button>
                     <button type="button" class="home-button3 button" on:click={deleteData}>Delete Data</button>
                 </nav>
             </div>
