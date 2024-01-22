@@ -21,6 +21,15 @@ export let arduino_data = readable({}, function start(set) {
 
          connection_finished = false;
 
+         set({celsius: "0",
+             fahrenheit: "0",
+             latitude: 51.24625639423764,
+             longitude: -0.5944592849389021,
+             ph: "0",
+             tds: "0",
+             time: null,
+             turbidity: "0"})
+
         ws.addEventListener('open',() => {
             console.log('Connected to WebSocket server');
         });
