@@ -5,31 +5,29 @@
     import Doughnut from "./Doughnut.svelte";
     import {onMount} from "svelte";
 
-    let dataGraph = {time: [], TENG: []};
+    let dataGraph = {};
 
     let loaded = false;
 
     let doughnutUpdate = {
-        TENG: () => {},
-        fahrenheit: () => {},
-        tds: () => {},
-        ph: () => {},
-        turbidity: () => {}
+        TENG1: () => {},
+        TENG2: () => {},
+        TENG3: () => {},
+        TENG4: () => {}
     }
     let graphUpdate = {
-        TENG: () => {},
-        fahrenheit: () => {},
-        tds: () => {},
-        ph: () => {},
-        turbidity: () => {}
+        TENG1: () => {},
+        TENG2: () => {},
+        TENG3: () => {},
+        TENG4: () => {}
     }
 
 
     onMount(() => {
-        dataGraph = {time: [], TENG: []}
+        dataGraph = {time: [], TENG1: [], TENG2: [], TENG3: [], TENG4: [], longitude: [], latitude: []}
 
         const loadInterval = setInterval(() => {
-            if ($arduino_data.TENG !== undefined) {
+            if ($arduino_data.TENG1 !== undefined) {
                 loaded = true;
                 clearInterval(loadInterval)
             }
@@ -40,17 +38,18 @@
     function updateGraph() {
         if (loaded) {
             dataGraph.time.push(new Date($arduino_data.time * 1000).toLocaleTimeString())
-            dataGraph.TENG.push($arduino_data.TENG)
-            // dataGraph.fahrenheit.push($arduino_data.fahrenheit)
-            // dataGraph.tds.push($arduino_data.tds)
-            // dataGraph.ph.push($arduino_data.ph)
-            // dataGraph.turbidity.push($arduino_data.turbidity)
+            dataGraph.TENG1.push($arduino_data.TENG1)
+            dataGraph.TENG2.push($arduino_data.TENG2)
+            dataGraph.TENG3.push($arduino_data.TENG3)
+            dataGraph.TENG4.push($arduino_data.TENG4)
 
-            // if (dataGraph.time.length >= 100) {
-            //     for (const i of Object.keys(dataGraph)) {
-            //         dataGraph[i] = dataGraph[i].slice(-100);
-            //     }
-            // }
+
+
+            if (dataGraph.time.length >= 200) {
+                for (const i of Object.keys(dataGraph)) {
+                    dataGraph[i] = dataGraph[i].slice(-200);
+                }
+            }
 
             for (const i of Object.keys(doughnutUpdate)) {
                 doughnutUpdate[i]()
@@ -94,7 +93,7 @@
 
             } else {
                 ws.send(JSON.stringify({command: "delete"}));
-                dataGraph = {time: [], TENG: []}
+                dataGraph = {time: [], TENG1: [], TENG2: [], TENG3: [], TENG4: [], longitude: [], latitude: []}
                 alert("Deleted data!");
                 ws.close();
             }
@@ -237,28 +236,23 @@
         <div class="doughnutValues">
             <div class="doughnutDiv">
                 <h4>TENG1</h4>
-                <Doughnut id={"0"} label="TENG1" value={$arduino_data.TENG} max={50} bind:update_trigger={doughnutUpdate.TENG}/>
-                <h3 class="doughnutText">{$arduino_data.TENG}</h3>
+                <Doughnut id={"1"} label="TENG1" value={$arduino_data.TENG1} max={200} bind:update_trigger={doughnutUpdate.TENG1}/>
+                <h3 class="doughnutText">{$arduino_data.TENG1}</h3>
             </div>
             <div class="doughnutDiv">
-                <h4>Temp. (oF)</h4>
-                <Doughnut id={"1"} label="Fahrenheit" value={$arduino_data.fahrenheit} max={162} bind:update_trigger={doughnutUpdate.fahrenheit}/>
-                <h3 class="doughnutText">{$arduino_data.fahrenheit}</h3>
+                <h4>TENG2</h4>
+                <Doughnut id={"2"} label="TENG2" value={$arduino_data.TENG2} max={200} bind:update_trigger={doughnutUpdate.TENG2}/>
+                <h3 class="doughnutText">{$arduino_data.TENG2}</h3>
             </div>
             <div class="doughnutDiv">
-                <h4>pH</h4>
-                <Doughnut id={"2"} label="pH" value={$arduino_data.ph} max={14} bind:update_trigger={doughnutUpdate.ph}/>
-                <h3 class="doughnutText">{$arduino_data.ph}</h3>
+                <h4>TENG3</h4>
+                <Doughnut id={"3"} label="TENG3" value={$arduino_data.TENG3} max={200} bind:update_trigger={doughnutUpdate.TENG3}/>
+                <h3 class="doughnutTextSmaller">{$arduino_data.TENG3}</h3>
             </div>
             <div class="doughnutDiv">
-                <h4>Turb.</h4>
-                <Doughnut id={"3"} label="Turb" value={$arduino_data.turbidity} max={5000} bind:update_trigger={doughnutUpdate.turbidity}/>
-                <h3 class="doughnutTextSmaller">{$arduino_data.turbidity}</h3>
-            </div>
-            <div class="doughnutDiv">
-                <h4>TDS.</h4>
-                <Doughnut id={"4"} label="TDS" value={$arduino_data.tds} max={200} bind:update_trigger={doughnutUpdate.tds}/>
-                <h3 class="doughnutText">{$arduino_data.tds}</h3>
+                <h4>TENG4</h4>
+                <Doughnut id={"4"} label="TENG4" value={$arduino_data.TENG4} max={200} bind:update_trigger={doughnutUpdate.TENG4}/>
+                <h3 class="doughnutText">{$arduino_data.TENG4}</h3>
             </div>
         </div>
     </div>
@@ -267,33 +261,33 @@
     <div class="home-container1">
         <div class="grid-databox">
             <h3>TENG1</h3>
-            <Graph id={"0"} labels={dataGraph.time} values={dataGraph.TENG} bind:update_trigger={graphUpdate.TENG}/>
+            <Graph id={"0"} labels={dataGraph.time} values={dataGraph.TENG1} bind:update_trigger={graphUpdate.TENG1}/>
         </div>
-<!--        <div class="grid-databox">-->
-<!--            <h3>pH Level</h3>-->
-<!--            <Graph id={"1"} labels={dataGraph.time} values={dataGraph.ph} bind:update_trigger={graphUpdate.ph}/>-->
-<!--        </div>-->
-<!--        <div class="grid-databox">-->
-<!--            <h3>Turbidity</h3>-->
-<!--            <Graph id={"2"} labels={dataGraph.time} values={dataGraph.turbidity} bind:update_trigger={graphUpdate.turbidity}/>-->
-<!--        </div>-->
-<!--        <div class="grid-databox">-->
-<!--            <h3>TDS</h3>-->
-<!--            <Graph id={"3"} labels={dataGraph.time} values={dataGraph.tds} bind:update_trigger={graphUpdate.tds}/>-->
-<!--        </div>-->
+        <div class="grid-databox">
+            <h3>TENG2</h3>
+            <Graph id={"1"} labels={dataGraph.time} values={dataGraph.TENG2} bind:update_trigger={graphUpdate.TENG2}/>
+        </div>
+        <div class="grid-databox">
+            <h3>TENG3</h3>
+            <Graph id={"2"} labels={dataGraph.time} values={dataGraph.TENG3} bind:update_trigger={graphUpdate.TENG3}/>
+        </div>
+        <div class="grid-databox">
+            <h3>TENG4</h3>
+            <Graph id={"3"} labels={dataGraph.time} values={dataGraph.TENG4} bind:update_trigger={graphUpdate.TENG4}/>
+        </div>
     </div>
 
     <h1>The time is {formatter.format($time)}</h1>
     <h3>Map</h3>
-<!--    <Map lon={$arduino_data.longitude} lat={$arduino_data.latitude} />-->
+    <Map lon={-0.5938466} lat={51.2434036} />
 </div>
 
 <footer class="home-footer1">
     <div class="home-container2">
-        <span class="home-logo1">Group F Design</span>
+        <span class="home-logo1">David OS Design</span>
     </div>
     <div class="home-container3">
-        <span class="home-text1">© 2023 Group F, All Rights Reserved.</span>
+        <span class="home-text1">© 2024 David Patyk, All Rights Reserved.</span>
         <div class="home-icon-group">
             <svg viewBox="0 0 950.8571428571428 1024" class="home-icon">
                 <path

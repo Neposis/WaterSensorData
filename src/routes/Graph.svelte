@@ -7,8 +7,8 @@
     export let values;
 
     export const update_trigger = () => {
-        config.data.labels = labels.slice(-100);
-        config.data.datasets[0].data = values.slice(-100);
+        config.data.labels = labels.slice(-200);
+        config.data.datasets[0].data = values.slice(-200);
         charty.update('none')
     }
 
