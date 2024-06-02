@@ -21,14 +21,7 @@ export let arduino_data = readable({}, function start(set) {
 
          connection_finished = false;
 
-         set({celsius: "0",
-             fahrenheit: "0",
-             latitude: 51.24625639423764,
-             longitude: -0.5944592849389021,
-             ph: "0",
-             tds: "0",
-             time: null,
-             turbidity: "0"})
+         set({TENG: 0})
 
         ws.addEventListener('open',() => {
             console.log('Connected to WebSocket server');
@@ -54,10 +47,10 @@ export let arduino_data = readable({}, function start(set) {
                 let json_data = JSON.parse(data)
                 for (const val of Object.keys(json_data)) {
                     if (val === "time") {json_data[val] = parseInt(json_data[val])}
-                    else if (val === "longitude" || val === "latitude") json_data[val] = parseFloat(json_data[val])
+                    // else if (val === "longitude" || val === "latitude") json_data[val] = parseFloat(json_data[val])
                     else json_data[val] = parseFloat(json_data[val]).toFixed(2)
                 }
-                console.log(json_data)
+                // console.log(json_data)
                 set(json_data)
             }
 
