@@ -247,7 +247,7 @@
             <div class="doughnutDiv">
                 <h4>TENG3</h4>
                 <Doughnut id={"3"} label="TENG3" value={$arduino_data.TENG3} max={200} bind:update_trigger={doughnutUpdate.TENG3}/>
-                <h3 class="doughnutTextSmaller">{$arduino_data.TENG3}</h3>
+                <h3 class="doughnutText">{$arduino_data.TENG3}</h3>
             </div>
             <div class="doughnutDiv">
                 <h4>TENG4</h4>
