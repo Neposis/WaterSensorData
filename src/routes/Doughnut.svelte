@@ -14,7 +14,6 @@
         charty.update();
     }
 
-
     let config;
     let charty;
 

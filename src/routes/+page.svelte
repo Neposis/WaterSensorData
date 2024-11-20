@@ -4,32 +4,41 @@
     import Map from "./Map.svelte";
     import Doughnut from "./Doughnut.svelte";
     import {onMount} from "svelte";
+    import Square from "./Square.svelte";
 
     let dataGraph = {};
 
     let loaded = false;
 
-    let doughnutUpdate = {
-        TENG1: () => {},
-        TENG2: () => {},
-        TENG3: () => {},
-        TENG4: () => {}
-    }
-    let graphUpdate = {
-        TENG1: () => {},
-        TENG2: () => {},
-        TENG3: () => {},
-        TENG4: () => {}
-    }
-
+    let doughnutUpdate = {}
+    let graphUpdate = {}
+    let squareUpdate = {}
+    let teng_list = []
 
     onMount(() => {
-        dataGraph = {time: [], TENG1: [], TENG2: [], TENG3: [], TENG4: [], longitude: [], latitude: []}
-
         const loadInterval = setInterval(() => {
-            if ($arduino_data.TENG1 !== undefined) {
+            if (Object.entries($arduino_data).length > 1) {
                 loaded = true;
                 clearInterval(loadInterval)
+                console.log($arduino_data)
+
+                const regex = /TENG.+/g;
+                let temp_list = [];
+                let result;
+
+                for (const i in $arduino_data) {
+                    dataGraph[i] = [];
+
+                    result = i.match(regex)
+                    if (result !== null) {
+                        teng_list.push(result[0]);
+                        temp_list[result[0]] = () => {};
+                    }
+                }
+
+                doughnutUpdate = {...temp_list}
+                graphUpdate = {...temp_list}
+                squareUpdate = {...temp_list}
             }
         }, 100);
     })
@@ -38,12 +47,13 @@
     function updateGraph() {
         if (loaded) {
             dataGraph.time.push(new Date($arduino_data.time * 1000).toLocaleTimeString())
-            dataGraph.TENG1.push($arduino_data.TENG1)
-            dataGraph.TENG2.push($arduino_data.TENG2)
-            dataGraph.TENG3.push($arduino_data.TENG3)
-            dataGraph.TENG4.push($arduino_data.TENG4)
 
 
+            for (const i in $arduino_data) {
+                if (i !== "time") {
+                    dataGraph[i].push($arduino_data[i]);
+                }
+            }
 
             if (dataGraph.time.length >= 200) {
                 for (const i of Object.keys(dataGraph)) {
@@ -53,13 +63,11 @@
 
             for (const i of Object.keys(doughnutUpdate)) {
                 doughnutUpdate[i]()
-            }
-            for (const i of Object.keys(graphUpdate)) {
                 graphUpdate[i]()
+                squareUpdate[i]()
             }
         }
     }
-
 
 
     const formatter = new Intl.DateTimeFormat('en', {
@@ -93,7 +101,12 @@
 
             } else {
                 ws.send(JSON.stringify({command: "delete"}));
-                dataGraph = {time: [], TENG1: [], TENG2: [], TENG3: [], TENG4: [], longitude: [], latitude: []}
+
+                // Reset values
+                for (const i in dataGraph) {
+                    dataGraph[i] = [];
+                }
+                console.log(dataGraph)
                 alert("Deleted data!");
                 ws.close();
             }
@@ -141,7 +154,7 @@
                     let a = document.createElement('a');
                     document.body.append(a)
                     a.download = "download"
-                    a.href = "./ExportedData.json"
+                    a.href = data.location
                     a.click()
                     a.remove()
                     ws.close()
@@ -191,7 +204,7 @@
                     let a = document.createElement('a');
                     document.body.append(a)
                     a.download = "download"
-                    a.href = "./ExportedData.xlsx"
+                    a.href = data.location
                     a.click()
                     a.remove()
                     ws.close()
@@ -222,6 +235,7 @@
                     <button type="button" class="home-button1 button" on:click={exportJsonData}>Export to JSON</button>
                     <button type="button" class="home-button2 button" on:click={exportExcelData}>Export to Excel</button>
                     <button type="button" class="home-button3 button" on:click={deleteData}>Delete Data</button>
+                    <h2>The time is {formatter.format($time)}</h2>
                 </nav>
             </div>
 
@@ -234,53 +248,38 @@
     <div class="data-bar">
         <h1 class="home-text">Data:</h1>
         <div class="doughnutValues">
+            {#each teng_list as teng}
             <div class="doughnutDiv">
-                <h4>TENG1</h4>
-                <Doughnut id={"1"} label="TENG1" value={$arduino_data.TENG1} max={200} bind:update_trigger={doughnutUpdate.TENG1}/>
-                <h3 class="doughnutText">{$arduino_data.TENG1}</h3>
+                <h4>{teng}</h4>
+                <Doughnut id={teng} label={teng} value={$arduino_data[teng]} max={200} bind:update_trigger={doughnutUpdate[teng]}/>
+                <h3 class="doughnutText">{$arduino_data[teng]}</h3>
             </div>
-            <div class="doughnutDiv">
-                <h4>TENG2</h4>
-                <Doughnut id={"2"} label="TENG2" value={$arduino_data.TENG2} max={200} bind:update_trigger={doughnutUpdate.TENG2}/>
-                <h3 class="doughnutText">{$arduino_data.TENG2}</h3>
-            </div>
-            <div class="doughnutDiv">
-                <h4>TENG3</h4>
-                <Doughnut id={"3"} label="TENG3" value={$arduino_data.TENG3} max={200} bind:update_trigger={doughnutUpdate.TENG3}/>
-                <h3 class="doughnutText">{$arduino_data.TENG3}</h3>
-            </div>
-            <div class="doughnutDiv">
-                <h4>TENG4</h4>
-                <Doughnut id={"4"} label="TENG4" value={$arduino_data.TENG4} max={200} bind:update_trigger={doughnutUpdate.TENG4}/>
-                <h3 class="doughnutText">{$arduino_data.TENG4}</h3>
-            </div>
+            {/each}
         </div>
     </div>
 
 
     <div class="home-container1">
+        {#each teng_list as teng}
         <div class="grid-databox">
-            <h3>TENG1</h3>
-            <Graph id={"0"} labels={dataGraph.time} values={dataGraph.TENG1} bind:update_trigger={graphUpdate.TENG1}/>
+            <h3>{teng}</h3>
+            <Graph id={teng} labels={dataGraph.time} values={dataGraph[teng]} bind:update_trigger={graphUpdate[teng]}/>
         </div>
-        <div class="grid-databox">
-            <h3>TENG2</h3>
-            <Graph id={"1"} labels={dataGraph.time} values={dataGraph.TENG2} bind:update_trigger={graphUpdate.TENG2}/>
-        </div>
-        <div class="grid-databox">
-            <h3>TENG3</h3>
-            <Graph id={"2"} labels={dataGraph.time} values={dataGraph.TENG3} bind:update_trigger={graphUpdate.TENG3}/>
-        </div>
-        <div class="grid-databox">
-            <h3>TENG4</h3>
-            <Graph id={"3"} labels={dataGraph.time} values={dataGraph.TENG4} bind:update_trigger={graphUpdate.TENG4}/>
-        </div>
+        {/each}
     </div>
 
-    <h1>The time is {formatter.format($time)}</h1>
+    <div class="grid-databox" style="height: 70vh; width: 100vw">
+        <h3>TENGs</h3>
+        {#each teng_list as teng}
+            <Square id={teng} max={[20, 50, 100]} value={$arduino_data[teng]} bind:update_trigger={squareUpdate[teng]}/>
+        {/each}
+    </div>
+
     <h3>Map</h3>
     <Map lon={-0.5938466} lat={51.2434036} />
 </div>
+
+
 
 <footer class="home-footer1">
     <div class="home-container2">
@@ -437,7 +436,6 @@
         height: 25vh;
         margin-bottom: 5vh;
         align-items: center;
-
     }
 
     .doughnutValues {
