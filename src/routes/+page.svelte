@@ -141,7 +141,7 @@
                     let a = document.createElement('a');
                     document.body.append(a)
                     a.download = "download"
-                    a.href = "./ExportedData.json"
+                    a.href = data.location
                     a.click()
                     a.remove()
                     ws.close()
@@ -191,7 +191,7 @@
                     let a = document.createElement('a');
                     document.body.append(a)
                     a.download = "download"
-                    a.href = "./ExportedData.xlsx"
+                    a.href = data.location
                     a.click()
                     a.remove()
                     ws.close()
