@@ -6,10 +6,9 @@
     import {onMount} from "svelte";
     import Square from "./Square.svelte";
 
+
     let dataGraph = {};
-
     let loaded = false;
-
     let doughnutUpdate = {}
     let graphUpdate = {}
     let squareUpdate = {}
@@ -134,7 +133,7 @@
 
         ws.addEventListener('message', (data) => {
             data = data.data;
-            console.info(data)
+            // console.info(data)
 
             if (!connection_finished) {
                 if (data === "State your business!") {
@@ -151,12 +150,13 @@
             } else {
                 data = JSON.parse(data)
                 if (data.command === "exportReady") {
-                    let a = document.createElement('a');
-                    document.body.append(a)
-                    a.download = "download"
-                    a.href = data.location
-                    a.click()
-                    a.remove()
+                    // let a = document.createElement('a');
+                    // document.body.append(a)
+                    // a.download = "download"
+                    // a.href = data.location
+                    // a.click()
+                    // a.remove()
+                    alert("File has been saved to your Downloads Directory")
                     ws.close()
                 }
             }
@@ -201,12 +201,13 @@
             } else {
                 data = JSON.parse(data)
                 if (data.command === "exportReady") {
-                    let a = document.createElement('a');
-                    document.body.append(a)
-                    a.download = "download"
-                    a.href = data.location
-                    a.click()
-                    a.remove()
+                    // let a = document.createElement('a');
+                    // document.body.append(a)
+                    // a.download = "download"
+                    // a.href = data.location
+                    // a.click()
+                    // a.remove()
+                    alert("Excel file has been saved to your Downloads Directory")
                     ws.close()
                 }
             }
